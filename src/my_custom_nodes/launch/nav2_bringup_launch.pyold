@@ -1,0 +1,154 @@
+from launch import LaunchDescription
+from launch_ros.actions import Node
+from launch.actions import IncludeLaunchDescription, TimerAction
+from launch.launch_description_sources import PythonLaunchDescriptionSource
+from launch.actions import LogInfo
+from launch.substitutions import PathJoinSubstitution
+import os
+
+def generate_launch_description():
+    # Correct path to launch file
+    nav2_bringup_launch_file_dir = '/home/max/ros2_ws/install/nav2_bringup/share/nav2_bringup/launch'
+
+    return LaunchDescription([
+        # Static transform publisher (odom -> base_link)
+        Node(
+            package='tf2_ros',
+            executable='static_transform_publisher',
+            name='static_tf_pub',
+            arguments=['0', '0', '0', '0', '0', '0', 'odom', 'base_link'],
+            output='screen'
+        ),
+
+        # Static transform publisher (base_link -> laser_frame)
+        Node(
+            package='tf2_ros',
+            executable='static_transform_publisher',
+            name='static_tf_pub_laser',
+            arguments=['0', '0', '0', '0', '0', '0', 'base_link', 'laser_frame'],
+            output='screen'
+        ),
+
+        # LIDAR node
+        Node(
+            package='ldlidar_stl_ros2',
+            executable='ldlidar_stl_ros2_node',
+            name='ldlidar_node',
+            output='screen',
+            parameters=[{
+                'product_name': 'LDLiDAR_LD19',
+                'topic_name': 'scan',
+                'frame_id': 'laser_frame',
+                'port_name': '/dev/ttyUSB0',
+                'port_baudrate': 230400,
+                'laser_scan_dir': True,
+                'enable_angle_crop_func': False,
+                'angle_crop_min': 0.0,
+                'angle_crop_max': 0.0,
+                'qos_overrides': {
+                    'scan': {
+                        'reliability': 'best_effort',
+                        'durability': 'volatile'
+                    }
+                }
+            }],
+        ),
+
+        # SLAM node (e.g., slam_toolbox)
+        Node(
+            package='slam_toolbox',
+            executable='async_slam_toolbox_node',
+            name='slam_toolbox',
+            namespace='localization',
+            output='screen',
+            parameters=['/home/max/ros2_ws/config/slam_toolbox_params.yaml'],
+            
+        ),
+
+        # Include nav2_bringup launch file
+        IncludeLaunchDescription(
+            PythonLaunchDescriptionSource(
+                os.path.join(nav2_bringup_launch_file_dir, 'bringup_launch.py')
+            ),
+            launch_arguments={
+                'use_sim_time': 'false',
+                'params_file': '/home/max/ros2_ws/config/nav2_params.yaml'
+            }.items()
+        ),
+
+        # Planner server
+        Node(
+            package='nav2_planner',
+            executable='planner_server',
+            name='planner_server',
+            output='screen',
+            parameters=['/home/max/ros2_ws/config/planner_params.yaml'],
+            arguments=['--ros-args', '--log-level', 'warning']
+        ),
+
+        # Controller server with debug logging
+        Node(
+            package='nav2_controller',
+            executable='controller_server',
+            name='controller_server',
+            output='screen',
+            parameters=['/home/max/ros2_ws/config/controller_params.yaml'],
+            arguments=['--ros-args', '--log-level', 'warning']
+        ),
+
+        # Waypoint follower
+        Node(
+            package='nav2_waypoint_follower',
+            executable='waypoint_follower',
+            name='waypoint_follower',
+            output='screen',
+            parameters=['/home/max/ros2_ws/config/waypoint_params.yaml']
+        ),
+
+        # IMU Subscriber from your custom package
+        Node(
+            package='my_custom_nodes',
+            executable='imu_subscriber',
+            name='imu_subscriber',
+            output='screen',
+            remappings=[('/imu/data_raw', '/imu/data_raw')]
+        ),
+
+        # Motor Encoders Subscriber
+        Node(
+            package='my_custom_nodes',
+            executable='encoder_subscriber',
+            name='encoder_subscriber',
+            output='screen',
+            remappings=[('/motor_encoders', '/motor_encoders')]
+        ),
+
+        # Motor Commands Publisher
+        Node(
+            package='my_custom_nodes',
+            executable='motor_command_publisher',
+            name='motor_command_publisher',
+            output='screen',
+            remappings=[('/motor_commands', '/motor_commands')]
+        ),
+
+        # Map Server
+        Node(
+            package='nav2_map_server',
+            executable='map_server',
+            name='map_server',
+            output='screen',
+            parameters=[{
+                'yaml_filename': '/home/max/ros2_ws/my_map.yaml',  # Path to your saved map
+                'use_sim_time': False
+            }]
+        ),
+
+        # Save map service node
+        Node(
+            package='my_custom_nodes',
+            executable='/home/max/ros2_ws/src/custom_nav2_launch/scripts/save_map_node.py',
+            name='save_map_node',
+            output='screen'
+        )
+    ])

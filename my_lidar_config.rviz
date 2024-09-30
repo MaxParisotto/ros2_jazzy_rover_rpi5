@@ -1,0 +1,16 @@
+Visualization Manager:
+  Global Options:
+    Fixed Frame: "laser_frame"
+Displays:
+  - Class: rviz/Grid
+    Enabled: true
+  - Class: rviz/LaserScan
+    Topic: "/scan"
+    Enabled: true
+    Queue Size: 10
+    Alpha: 1.0
+    Color: 255; 0; 0
+    Style: Points
+    Decay Time: 0.0
+  - Class: rviz/TF
+    Enabled: true
