@@ -111,7 +111,7 @@ def generate_launch_description():
             name='map_server',
             output='screen',
             parameters=[{
-                'yaml_filename': '/home/max/ros2_ws/my_map.yaml',
+                'yaml_filename': '/home/max/ros2_ws/map/map.yaml',
                 'use_sim_time': False
             }]
         ),
@@ -125,7 +125,7 @@ def generate_launch_description():
                     cmd=[
                         'ros2', 'service', 'call', '/slam_toolbox/save_map',
                         'slam_toolbox/srv/SaveMap',
-                        '{"name": "/home/max/ros2_ws/my_map"}'
+                        '{"name": "/home/max/ros2_ws/map/map"}'
                     ],
                     output='screen'
                 )
