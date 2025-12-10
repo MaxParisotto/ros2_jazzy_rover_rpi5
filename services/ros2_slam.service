@@ -14,7 +14,7 @@ Environment="ROS_DOMAIN_ID=0"
 # Wait for LiDAR to stabilize
 ExecStartPre=/bin/sleep 3
 
-ExecStart=/bin/bash -c 'source /opt/ros/jazzy/setup.bash && source /home/max/ros2_ws/install/setup.bash && ros2 launch slam_toolbox online_async_launch.py params_file:=/home/max/ros2_ws/config/slam_toolbox_params.yaml'
+ExecStart=/bin/bash -c 'source /opt/ros/jazzy/setup.bash && source /home/max/ros2_ws/install/setup.bash && ros2 launch slam_toolbox online_async_launch.py slam_params_file:=/home/max/ros2_ws/config/slam_toolbox_params.yaml use_sim_time:=false'
 
 Restart=on-failure
 RestartSec=5
