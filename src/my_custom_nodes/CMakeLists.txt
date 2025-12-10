@@ -44,9 +44,10 @@ install(TARGETS
   imu_subscriber
   DESTINATION lib/${PROJECT_NAME})
 
-# Install Python script
+# Install Python scripts
 install(PROGRAMS
   scripts/save_map_node.py
+  src/bbb_bridge_node.py
   DESTINATION lib/${PROJECT_NAME})
 
 ament_package()

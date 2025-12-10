@@ -1,0 +1,20 @@
+[Unit]
+Description=ROS2 LD19 LiDAR Node
+After=network.target
+Requires=network.target
+
+[Service]
+Type=simple
+User=max
+Group=max
+WorkingDirectory=/home/max/ros2_ws
+Environment="HOME=/home/max"
+Environment="ROS_DOMAIN_ID=0"
+
+ExecStart=/bin/bash -c 'source /opt/ros/jazzy/setup.bash && source /home/max/ros2_ws/install/setup.bash && ros2 launch ldlidar_stl_ros2 ld19.launch.py'
+
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

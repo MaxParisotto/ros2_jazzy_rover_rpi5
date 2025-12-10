@@ -1,0 +1,16 @@
+[Unit]
+Description=ROS2 BBB Bridge Node
+After=network.target
+
+[Service]
+Type=simple
+User=max
+Environment="HOME=/home/max"
+Environment="ROS_DOMAIN_ID=0"
+WorkingDirectory=/home/max/ros2_ws
+ExecStart=/bin/bash -c 'source /opt/ros/jazzy/setup.bash && source /home/max/ros2_ws/install/setup.bash && ros2 run my_custom_nodes bbb_bridge_node.py'
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

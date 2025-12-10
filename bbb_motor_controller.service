@@ -1,0 +1,16 @@
+[Unit]
+Description=BeagleBone Blue Motor Controller Service
+After=network.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/home/debian
+ExecStartPre=/usr/bin/config-pin P9.24 uart
+ExecStartPre=/usr/bin/config-pin P9.26 uart
+ExecStart=/usr/bin/python3 /home/debian/bbb_motor_controller.py
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
