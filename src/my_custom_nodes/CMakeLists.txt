@@ -48,6 +48,8 @@ install(TARGETS
 install(PROGRAMS
   scripts/save_map_node.py
   src/bbb_bridge_node.py
+  src/orbbec_camera_node.py
+  src/foxglove_bridge_node.py
   DESTINATION lib/${PROJECT_NAME})
 
 ament_package()

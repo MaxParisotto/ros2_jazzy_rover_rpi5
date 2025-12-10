@@ -1,0 +1,23 @@
+[Unit]
+Description=ROS2 SLAM Toolbox Node
+After=network.target ros2_lidar.service
+Requires=ros2_lidar.service
+
+[Service]
+Type=simple
+User=max
+Group=max
+WorkingDirectory=/home/max/ros2_ws
+Environment="HOME=/home/max"
+Environment="ROS_DOMAIN_ID=0"
+
+# Wait for LiDAR to stabilize
+ExecStartPre=/bin/sleep 3
+
+ExecStart=/bin/bash -c 'source /opt/ros/jazzy/setup.bash && source /home/max/ros2_ws/install/setup.bash && ros2 launch slam_toolbox online_async_launch.py params_file:=/home/max/ros2_ws/config/slam_toolbox_params.yaml'
+
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
