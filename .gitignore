@@ -29,6 +29,3 @@ Thumbs.db
 # RViz backup files
 *.rviz~
 
-# External repositories
-src/ldlidar_stl_ros2
-src/ldlidar_stl_ros2
